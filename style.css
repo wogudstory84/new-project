@@ -83,18 +83,44 @@ h1 {
     margin-bottom: 30px;
 }
 
-#webcam-container {
-    width: 200px;
-    height: 200px;
-    border-radius: 15px;
-    overflow: hidden;
-    background-color: #000;
-    box-shadow: 0 5px 15px var(--shadow-color);
+.file-upload {
+    margin-bottom: 20px;
 }
 
-#webcam-container canvas {
-    width: 100% !important;
-    height: 100% !important;
+.upload-label {
+    display: inline-block;
+    background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 100%);
+    color: white;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.upload-label:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(37, 117, 252, 0.5);
+}
+
+#image-preview-container {
+    width: 300px;
+    height: 300px;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    margin-bottom: 20px;
+}
+
+#image-preview {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 #label-container {
@@ -139,24 +165,6 @@ h1 {
     width: 50px;
     font-size: 0.9rem;
     color: var(--text-color);
-}
-
-#start-button {
-    background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 100%);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    margin-bottom: 40px;
-}
-
-#start-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(37, 117, 252, 0.5);
 }
 
 .partnership-container {
@@ -215,5 +223,9 @@ h1 {
     }
     h1 {
         font-size: 1.5rem;
+    }
+    #image-preview-container {
+        width: 250px;
+        height: 250px;
     }
 }
