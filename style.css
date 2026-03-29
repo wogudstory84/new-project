@@ -6,11 +6,24 @@
     --danger-color: #DC3545;
     --warning-color: #FFC107;
     --info-color: #17A2B8;
-    --light-color: #F8F9FA;
-    --dark-color: #343A40;
+    
+    /* Light mode defaults */
+    --bg-color: #F8F9FA;
+    --container-bg: #ffffff;
+    --text-color: #343A40;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --btn-shadow-color: rgba(0, 0, 0, 0.2);
 
     --gradient-start: #6a11cb;
     --gradient-end: #2575fc;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --container-bg: #2d2d2d;
+    --text-color: #f0f0f0;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --btn-shadow-color: rgba(0, 0, 0, 0.4);
 }
 
 body {
@@ -19,23 +32,46 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: var(--light-color);
+    background-color: var(--bg-color);
     background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
     margin: 0;
+    transition: background-color 0.3s ease;
 }
 
 .container {
+    position: relative;
     text-align: center;
-    background: #ffffff;
+    background: var(--container-bg);
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 15px 50px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px var(--shadow-color);
     max-width: 90%;
     width: 500px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+#theme-toggle-button {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+#theme-toggle-button:hover {
+    background-color: rgba(128, 128, 128, 0.1);
 }
 
 h1 {
-    color: var(--dark-color);
+    color: var(--text-color);
     margin-bottom: 30px;
     font-size: 2.5rem;
 }
@@ -71,7 +107,6 @@ h1 {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Styles for the web component will be encapsulated, but we can have some defaults */
 lotto-ball {
     display: inline-block;
     width: 60px;
