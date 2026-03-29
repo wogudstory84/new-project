@@ -1,48 +1,76 @@
-class LottoBall extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+// Teachable Machine URL - 실제 모델 URL로 변경 가능합니다.
+// 현재는 예시 URL로 설정되어 있습니다.
+const URL = "https://teachablemachine.withgoogle.com/models/xykbejen/"; 
 
-    connectedCallback() {
-        const number = this.getAttribute('number');
-        this.shadowRoot.innerHTML = `
-            <style>
-                .ball {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 50%;
-                    color: white;
-                    font-size: 1.5rem;
-                    font-weight: bold;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                    background-color: ${this.getColor(number)};
-                }
-                 @media (max-width: 600px) {
-                    .ball {
-                        width: 50px;
-                        height: 50px;
-                        font-size: 1.2rem;
-                    }
-                }
-            </style>
-            <div class="ball">${number}</div>
-        `;
-    }
+let model, webcam, labelContainer, maxPredictions;
 
-    getColor(number) {
-        if (number <= 10) return '#fbc400'; // Yellow
-        if (number <= 20) return '#69c8f2'; // Blue
-        if (number <= 30) return '#ff7272'; // Red
-        if (number <= 40) return '#aaa'; // Gray
-        return '#b0d840'; // Green
+// Load the image model and setup the webcam
+async function init() {
+    const startButton = document.getElementById("start-button");
+    startButton.disabled = true;
+    startButton.textContent = "모델 로딩 중...";
+
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
+
+    try {
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = true; 
+        webcam = new tmImage.Webcam(200, 200, flip); 
+        await webcam.setup(); 
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = ''; // 초기화
+
+        for (let i = 0; i < maxPredictions; i++) {
+            const predictionBar = document.createElement("div");
+            predictionBar.className = "prediction-bar";
+            predictionBar.innerHTML = `
+                <div class="class-name">...</div>
+                <div class="bar-wrap">
+                    <div class="bar-fill" id="bar-${i}"></div>
+                </div>
+                <div class="probability-text" id="prob-${i}">0%</div>
+            `;
+            labelContainer.appendChild(predictionBar);
+        }
+        
+        startButton.style.display = "none";
+    } catch (error) {
+        console.error(error);
+        alert("모델을 불러오는데 실패했습니다. URL을 확인해주세요.");
+        startButton.disabled = false;
+        startButton.textContent = "AI 분석 시작하기";
     }
 }
 
-customElements.define('lotto-ball', LottoBall);
+async function loop() {
+    webcam.update(); 
+    await predict();
+    window.requestAnimationFrame(loop);
+}
+
+async function predict() {
+    const prediction = await model.predict(webcam.canvas);
+    for (let i = 0; i < maxPredictions; i++) {
+        const className = prediction[i].className;
+        const probability = (prediction[i].probability * 100).toFixed(0);
+        
+        const labelDiv = labelContainer.childNodes[i];
+        labelDiv.querySelector(".class-name").textContent = className;
+        
+        const barFill = document.getElementById(`bar-${i}`);
+        barFill.style.width = probability + "%";
+        
+        const probText = document.getElementById(`prob-${i}`);
+        probText.textContent = probability + "%";
+    }
+}
 
 // Theme Toggle Logic
 const themeToggleButton = document.getElementById('theme-toggle-button');
@@ -64,23 +92,4 @@ themeToggleButton.addEventListener('click', () => {
         themeToggleButton.textContent = '☀️';
         localStorage.setItem('theme', 'dark');
     }
-});
-
-document.getElementById('generate-button').addEventListener('click', () => {
-    const container = document.getElementById('lotto-balls-container');
-    container.innerHTML = '';
-    const numbers = new Set();
-    while (numbers.size < 6) {
-        numbers.add(Math.floor(Math.random() * 45) + 1);
-    }
-
-    const sortedNumbers = Array.from(numbers).sort((a, b) => a - b);
-
-    sortedNumbers.forEach((number, index) => {
-        setTimeout(() => {
-            const lottoBall = document.createElement('lotto-ball');
-            lottoBall.setAttribute('number', number);
-            container.appendChild(lottoBall);
-        }, index * 100); // Stagger the appearance of the balls
-    });
 });
